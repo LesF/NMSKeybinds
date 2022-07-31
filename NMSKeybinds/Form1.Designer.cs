@@ -34,6 +34,8 @@
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.viewNMSSettingsDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
@@ -50,8 +52,7 @@
             this.TxFilterAction = new System.Windows.Forms.TextBox();
             this.BtnRefresh = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
-            this.viewNMSSettingsDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.label4 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -99,6 +100,19 @@
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(221, 6);
             // 
+            // viewNMSSettingsDirectoryToolStripMenuItem
+            // 
+            this.viewNMSSettingsDirectoryToolStripMenuItem.Enabled = false;
+            this.viewNMSSettingsDirectoryToolStripMenuItem.Name = "viewNMSSettingsDirectoryToolStripMenuItem";
+            this.viewNMSSettingsDirectoryToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
+            this.viewNMSSettingsDirectoryToolStripMenuItem.Text = "View NMS Settings Directory";
+            this.viewNMSSettingsDirectoryToolStripMenuItem.Click += new System.EventHandler(this.viewNMSSettingsDirectoryToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(221, 6);
+            // 
             // closeToolStripMenuItem
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
@@ -122,12 +136,16 @@
             this.LVSettings.FullRowSelect = true;
             this.LVSettings.GridLines = true;
             this.LVSettings.HideSelection = false;
-            this.LVSettings.Location = new System.Drawing.Point(12, 123);
+            this.LVSettings.Location = new System.Drawing.Point(12, 141);
+            this.LVSettings.MultiSelect = false;
             this.LVSettings.Name = "LVSettings";
-            this.LVSettings.Size = new System.Drawing.Size(470, 682);
+            this.LVSettings.ShowGroups = false;
+            this.LVSettings.Size = new System.Drawing.Size(470, 664);
+            this.LVSettings.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.LVSettings.TabIndex = 9;
             this.LVSettings.UseCompatibleStateImageBehavior = false;
             this.LVSettings.View = System.Windows.Forms.View.Details;
+            this.LVSettings.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.LVSettings_ColumnClick);
             // 
             // columnHeader1
             // 
@@ -148,6 +166,7 @@
             // 
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.Controls.Add(this.label4);
             this.panel1.Controls.Add(this.BtnClear);
             this.panel1.Controls.Add(this.ComboFilterSet);
             this.panel1.Controls.Add(this.label3);
@@ -158,12 +177,13 @@
             this.panel1.Controls.Add(this.label1);
             this.panel1.Location = new System.Drawing.Point(12, 27);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(470, 90);
+            this.panel1.Size = new System.Drawing.Size(470, 108);
             this.panel1.TabIndex = 1;
             // 
             // BtnClear
             // 
             this.BtnClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.BtnClear.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.BtnClear.Location = new System.Drawing.Point(375, 4);
             this.BtnClear.Name = "BtnClear";
             this.BtnClear.Size = new System.Drawing.Size(92, 23);
@@ -238,23 +258,21 @@
             this.label1.TabIndex = 4;
             this.label1.Text = "Action";
             // 
-            // toolStripMenuItem2
+            // label4
             // 
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(221, 6);
-            // 
-            // viewNMSSettingsDirectoryToolStripMenuItem
-            // 
-            this.viewNMSSettingsDirectoryToolStripMenuItem.Enabled = false;
-            this.viewNMSSettingsDirectoryToolStripMenuItem.Name = "viewNMSSettingsDirectoryToolStripMenuItem";
-            this.viewNMSSettingsDirectoryToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
-            this.viewNMSSettingsDirectoryToolStripMenuItem.Text = "View NMS Settings Directory";
-            this.viewNMSSettingsDirectoryToolStripMenuItem.Click += new System.EventHandler(this.viewNMSSettingsDirectoryToolStripMenuItem_Click);
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(3, 84);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(391, 13);
+            this.label4.TabIndex = 10;
+            this.label4.Text = "Enter one or more Action or Button strings to match, with a space between values";
             // 
             // MainForm
             // 
+            this.AcceptButton = this.BtnRefresh;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.BtnClear;
             this.ClientSize = new System.Drawing.Size(494, 817);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.LVSettings);
@@ -298,6 +316,7 @@
         private System.Windows.Forms.Button BtnClear;
         private System.Windows.Forms.ToolStripMenuItem viewNMSSettingsDirectoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
+        private System.Windows.Forms.Label label4;
     }
 }
 

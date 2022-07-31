@@ -31,6 +31,7 @@ namespace NMSKeybinds
         private XmlDocument mCurrentSettings;
         private List<NMSKeyBinding> mBindings;
         private string mLastNMSSettingsDir;
+        private ListViewColumnSorter lvColumnSorter;
 
         struct NMSKeyBinding 
         { 
@@ -45,11 +46,20 @@ namespace NMSKeybinds
         {
             InitializeComponent();
 
+            lvColumnSorter = new ListViewColumnSorter();
+            LVSettings.ListViewItemSorter = lvColumnSorter;
+
             /* Check 'last NSM settings dir' in user settings.
              * If preset & valid, enable menu option for viewing the directory.
              */
             mLastNMSSettingsDir = Settings.Default.NMSSettingsDirectory;
             viewNMSSettingsDirectoryToolStripMenuItem.Enabled = !string.IsNullOrEmpty(mLastNMSSettingsDir) && Directory.Exists(mLastNMSSettingsDir);
+            if (!string.IsNullOrEmpty(mLastNMSSettingsDir))
+            {
+                string configFile = Path.Combine(mLastNMSSettingsDir, "TKGAMESETTINGS.MXML");
+                if (File.Exists(configFile))
+                    LoadSettingsFile(configFile);
+            }
         }
 
         #region EventHandlers
@@ -103,6 +113,32 @@ namespace NMSKeybinds
                     MessageBox.Show(this, $"Process creation failed\r\n{exc.Message}", "Directory View Failed");
                 }
             }
+        }
+
+        private void LVSettings_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
+            // Determine if clicked column is already the column that is being sorted.
+            if (e.Column == lvColumnSorter.SortColumn)
+            {
+                // Reverse the current sort direction for this column.
+                if (lvColumnSorter.Order == SortOrder.Ascending)
+                {
+                    lvColumnSorter.Order = SortOrder.Descending;
+                }
+                else
+                {
+                    lvColumnSorter.Order = SortOrder.Ascending;
+                }
+            }
+            else
+            {
+                // Set the column number that is to be sorted; default to ascending.
+                lvColumnSorter.SortColumn = e.Column;
+                lvColumnSorter.Order = SortOrder.Ascending;
+            }
+
+            // Perform the sort with these new sort options.
+            LVSettings.Sort();
         }
         #endregion
 
@@ -253,14 +289,20 @@ namespace NMSKeybinds
         }
 
         /// <summary>
-        /// Reload the listview from the stored config data, applying the current filters
+        /// Reload the listview from the stored config data, applying the current filters.
+        /// Uses simple OR filter, including any row which matches any of the filter values.
         /// </summary>
         private void RefreshList()
         {
             LVSettings.Items.Clear();
             LVSettings.SuspendLayout();
-            string filterAction = TxFilterAction.Text.Trim();
-            string filterButton = TxFilterButton.Text.Trim();
+
+            string filterValue = TxFilterAction.Text.Trim();
+            string[] actionList = filterValue.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+
+            filterValue = TxFilterButton.Text.Trim();
+            string[] buttonList = filterValue.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+
             string filterSet = "";
             if (ComboFilterSet.SelectedIndex > 0)
                 filterSet = ComboFilterSet.SelectedItem.ToString();
@@ -269,10 +311,32 @@ namespace NMSKeybinds
             {
                 if (filterSet.Length > 0 && !keyBinding.ActionSet.Equals(filterSet, StringComparison.OrdinalIgnoreCase))
                     continue;
-                if (filterAction.Length > 0 && keyBinding.Action.IndexOf(filterAction, StringComparison.OrdinalIgnoreCase) < 0)
-                    continue;
-                if (filterButton.Length > 0 && keyBinding.Button.IndexOf(filterButton, StringComparison.OrdinalIgnoreCase) < 0)
-                    continue;
+
+                if (actionList.Length > 0)
+                {
+                    bool actionMatch = false;
+                    foreach(string value in actionList)
+                        if (value.Length > 0 && keyBinding.Action.IndexOf(value, StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            actionMatch = true;
+                            break;
+                        }
+                    if (!actionMatch)
+                        continue;
+                }
+
+                if (buttonList.Length > 0)
+                {
+                    bool buttonMatch = false;
+                    foreach (string value in buttonList)
+                        if (value.Length > 0 && keyBinding.Button.IndexOf(value, StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            buttonMatch = true;
+                            break;
+                        }
+                    if (!buttonMatch)
+                        continue;
+                }
 
                 LVSettings.Items.Add(keyBinding.ToListViewItem());
             }
